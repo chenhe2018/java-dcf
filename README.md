@@ -10,6 +10,13 @@ $$
 
 上述公式正向求解较为简单，但是反向求解较为复杂。因其为一元方程，故采用牛顿拉夫森算法进行求解。
 
+##查看拟合图
+
+```python
+python figure.py
+```
+
+
 ## 参考
 
 [java-irr](https://github.com/rockychen1221/java-irr)
