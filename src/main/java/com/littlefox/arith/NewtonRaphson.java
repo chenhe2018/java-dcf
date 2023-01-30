@@ -23,7 +23,7 @@ public class NewtonRaphson {
     /** Default tolerance. */
     public static final double TOLERANCE = 0.000_000_1;
 
-    public static boolean IsSout = false;
+    public static boolean IsSout = true;
 
 
     /**

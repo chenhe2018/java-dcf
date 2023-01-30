@@ -18,7 +18,7 @@ public class DCFUtil {
     /**
      * 默认猜测值
      */
-    private static final double X0 = 0.3D;
+    private static final double X0 = 0.6D;
 
 //    private final List<Investment> investments;
 

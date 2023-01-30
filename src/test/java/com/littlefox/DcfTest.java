@@ -204,46 +204,38 @@ public class DcfTest {
             }
         }
         list.sort(Comparator.comparing(Transaction::getWhen));
-//        for (Transaction t :list){
-//            System.out.println(t.getWhen()+"\t"+t.getAmount());
-//        }
-
-        /**
-         * XIRR
-         */
-//        long s,e1,e2,e3;
-//        s=System.currentTimeMillis();
-//        double xirr = XIRRUtil.xirr(list);
-//        e1=System.currentTimeMillis();
-//        double yld = xirr;
-//        e2=System.currentTimeMillis();
-//        double prc = DCFUtil.dcf_yld2prc(list, yld);
-//        e3=System.currentTimeMillis();
-//        System.out.println("xirr:\t\t\t\t\t"+xirr+"\t"+(e1-s)+"ms");
-//        System.out.println("yld2prc：\t\t\t\t"+yld+"->"+prc+"\t"+(e2-e1)+"ms");
-//        System.out.println("牛顿拉夫森算法反推prc2yld：\t"+DCFUtil.dcf_prc2yld(list,prc)+"\t"+(e3-e2)+"ms");
-
-
-
-
-//        for(int i=-100;i<100;i++){
-//            double yld = 0.00001*i+xirr;
-//            double prc = DCFUtil.dcf_yld2prc(list, yld);
-//            System.out.println();
-//            System.out.println("yld2prc：\t\t\t\t"+yld+"->"+prc);
-//            System.out.println("牛顿拉夫森算法反推prc2yld：\t"+DCFUtil.dcf_prc2yld(list,prc));
-//        }
-
-
-
-        
-        //计算yld取值从-1到1，
-        for(double tmpyld = -0.000_001;tmpyld<1;tmpyld+=0.000_001){
-            double prc = DCFUtil.dcf_yld2prc(list, tmpyld);
-            double yld = DCFUtil.dcf_prc2yld(list, prc);
-//            System.out.println(yld+"\t"+prc);
-            bufferedWriterMethod("./dcf.txt",tmpyld+"\t"+prc+"\t"+yld+"\n");
+        for (Transaction t :list){
+            System.out.println(t.getWhen()+"\t"+t.getAmount());
         }
+
+        System.out.println("构造债券个数："+basket.size()+";对应现金流数量："+list.size());
+        Double xirr = XIRRUtil.xirr(list);
+        System.out.println("XIRR:"+xirr);
+
+//        //计算yld取值从-1到1，
+//        for(double tmpyld = -0.000_001;tmpyld<1;tmpyld+=0.000_001){
+//            double prc = DCFUtil.dcf_yld2prc(list, tmpyld);
+//            double yld = DCFUtil.dcf_prc2yld(list, prc);
+////            System.out.println(yld+"\t"+prc);
+//            bufferedWriterMethod("./dcf.txt",tmpyld+"\t"+prc+"\t"+yld+"\n");
+//        }
+
+
+        double [] ylds ={xirr-0.000_003,xirr-0.000_002,xirr-0.000_001,xirr,xirr+0.000_001,xirr+0.000_002,xirr+0.000_003};
+
+        long s, e1, e2;
+        for (double yld : ylds) {
+            s = System.currentTimeMillis();
+            double prc = DCFUtil.dcf_yld2prc(list, yld);
+            e1 = System.currentTimeMillis();
+            double v = DCFUtil.dcf_prc2yld(list, prc);
+            e2 = System.currentTimeMillis();
+            System.out.println();
+            System.out.println("yld2prc：\t\t\t\t" + yld + "->" + (300 + prc) + "\t" + (e1 - s) + "ms");
+            System.out.println("牛顿拉夫森算法反推prc2yld：\t" + v + "\t" + (e2 - e1) + "ms");
+        }
+
+
 
     }
 
