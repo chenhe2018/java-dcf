@@ -88,7 +88,7 @@ public class Dcf {
      * @throws IllegalArgumentException if all the transactions non-negative (withdrawals)
      */
     public Dcf(Collection<Transaction> txs, double guess) {
-        this(txs, null, guess);
+        this(txs, NewtonRaphson.builder(), guess);
     }
 
     private Dcf(Collection<Transaction> txs, NewtonRaphson.Builder builder, Double guess) {
@@ -102,7 +102,8 @@ public class Dcf {
                 .map(this::createInvestment)
                 .collect(Collectors.toList());
 
-        this.builder = builder != null ? builder : NewtonRaphson.builder();
+//        this.builder = builder != null ? builder : NewtonRaphson.builder();
+        this.builder = builder;
         this.guess = guess;
     }
 
@@ -233,7 +234,7 @@ public class Dcf {
 //                System.out.println(rate+"\t"+v);
                 return v;
             } else if (rate < -1) {
-                double v = Math.abs(amount) * (-years) * Math.pow(-1 - rate, - years - 1);
+                double v = - Math.abs(amount) * (-years) * Math.pow(-1 - rate, - years - 1);
 //                System.out.println(rate+"\t"+v);
                 return v;
             } else {
