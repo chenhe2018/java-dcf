@@ -102,6 +102,7 @@ public class NewtonRaphson {
         for (long i = 0; i < iterations; i++) {
             double value = func.applyAsDouble(candidate) - target;
             if (Math.abs(value) < tolerance) {
+                if(IsSout) System.out.println("=>[y:f(y)]"+candidate+":"+value);
                 return candidate;
             } else {
                 double slope = derivative.applyAsDouble(candidate);
@@ -109,7 +110,7 @@ public class NewtonRaphson {
                     throw new ZeroValuedDerivativeException(
                         guess, i, candidate, value);
                 }
-                if(IsSout) System.out.println("[candidate:f(x):f'(x)]"+candidate+":"+value+":"+slope);
+                if(IsSout) System.out.println("[y:f(y):f'(y)]"+candidate+":"+value+":"+slope);
                 candidate -= value / slope;
             }
         }
