@@ -10,10 +10,15 @@ $$
 
 上述公式正向求解较为简单，但是反向求解较为复杂。因其为一元方程，故采用牛顿拉夫森算法进行求解。
 
-##查看拟合图
+## 查看拟合图
+
+
+```text
+执行函数 com.littlefox.DcfTest.coupon57_x0_multiple()
+```
 
 ```python
-python figure.py
+执行脚本 python figure.py
 ```
 
 

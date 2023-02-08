@@ -7,10 +7,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="java-irr" />
+        <module name="java-dcf" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="java-dcf" target="1.8" />
       <module name="java-irr" target="1.8" />
     </bytecodeTargetLevel>
   </component>
