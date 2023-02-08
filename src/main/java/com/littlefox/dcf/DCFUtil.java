@@ -18,7 +18,7 @@ public class DCFUtil {
     /**
      * 默认猜测值
      */
-    private static final double X0 = 0.6D;
+    private static final double X0 = 0.5D;
 
 //    private final List<Investment> investments;
 
@@ -71,6 +71,16 @@ public class DCFUtil {
      * @return
      */
     public static double dcf_prc2yld(List<Transaction> list, double prc) {
+        return new Dcf(list, X0).dcf(prc);
+    }
+
+    /**
+     * 牛顿拉夫森算法，prc2yld
+     * @param list
+     * @param prc
+     * @return
+     */
+    public static double dcf_prc2yld(List<Transaction> list, double prc, double X0) {
         return new Dcf(list, X0).dcf(prc);
     }
 

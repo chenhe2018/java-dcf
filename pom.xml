@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.littlefox</groupId>
-  <artifactId>java-irr</artifactId>
+  <artifactId>java-dcf</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>java-irr</name>
+  <name>java-dcf</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 

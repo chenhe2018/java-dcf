@@ -136,11 +136,24 @@ public class Dcf {
      * @param rate the rate of return
      * @return derivative of the present value under the given rate
      */
-    public double derivative(final double rate) {
+    public double derivativeValue(final double rate) {
         return investments.stream()
-                .mapToDouble(inv -> inv.derivative(rate))
+                .mapToDouble(inv -> inv.derivativeValue(rate))
                 .sum();
     }
+
+
+    /**
+     * The second derivative of the present value under the given rate.
+     * @param rate the rate of return
+     * @return derivative of the present value under the given rate
+     */
+    public double secondDerivativeValue(final double rate) {
+        return investments.stream()
+                .mapToDouble(inv -> inv.secondDerivativeValue(rate))
+                .sum();
+    }
+
 
     /**
      * Calculates the irregular rate of return of the transactions for this
@@ -156,7 +169,8 @@ public class Dcf {
         }
         guess = guess != null ? guess : (details.total / details.deposits) / years;
         return builder.withFunction(this::presentValue)
-                .withDerivative(this::derivative)
+                .withDerivative(this::derivativeValue)
+                .withSecondDerivative(this::secondDerivativeValue)
                 .findRoot(guess);
     }
 
@@ -172,7 +186,8 @@ public class Dcf {
         }
         guess = guess != null ? guess : (details.total / details.deposits) / years;
         return builder.withFunction(this::presentValue)
-                .withDerivative(this::derivative)
+                .withDerivative(this::derivativeValue)
+                .withSecondDerivative(this::secondDerivativeValue)
                 .findRoot(guess,target);
     }
 
@@ -194,7 +209,7 @@ public class Dcf {
          */
         private double presentValue(final double rate) {
             if (-1 < rate) {
-                return  amount / Math.pow(1 + rate, years);
+                return  amount * Math.pow(1 + rate, - years);
             } else if (rate < -1) {
                 // Extend the function into the range where the rate is less
                 // than -100%.  Even though this does not make practical sense,
@@ -213,7 +228,7 @@ public class Dcf {
                 // (when rate < -1) so that Newton's method is encouraged to
                 // move the candidate values towards the proper range
 
-                return -Math.abs(amount) / Math.pow(-1 - rate, years);
+                return -Math.abs(amount) * Math.pow(-1 - rate, years);
             } else if (years == 0) {
                 return amount; // Resolve 0^0 as 0
             } else {
@@ -226,7 +241,7 @@ public class Dcf {
          * @param rate the rate of return
          * @return derivative of the present value at the given rate
          */
-        private double derivative(final double rate) {
+        private double derivativeValue(final double rate) {
             if (years == 0) {
                 return 0;
             } else if (-1 < rate) {
@@ -235,6 +250,28 @@ public class Dcf {
                 return v;
             } else if (rate < -1) {
                 double v = - Math.abs(amount) * (-years) * Math.pow(-1 - rate, - years - 1);
+//                System.out.println(rate+"\t"+v);
+                return v;
+            } else {
+                return 0;
+            }
+        }
+
+
+        /**
+         * Second Derivative of the present value of the investment at the given rate.
+         * @param rate the rate of return
+         * @return derivative of the present value at the given rate
+         */
+        private double secondDerivativeValue(final double rate) {
+            if (years == 0) {
+                return 0;
+            } else if (-1 < rate) {
+                double v = amount * (-years) * (-years-1) * Math.pow(1 + rate, - years - 2);
+//                System.out.println(rate+"\t"+v);
+                return v;
+            } else if (rate < -1) {
+                double v = - Math.abs(amount) * (-years) * (-years-1) * Math.pow(-1 - rate, - years - 2);
 //                System.out.println(rate+"\t"+v);
                 return v;
             } else {

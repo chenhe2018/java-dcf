@@ -23,7 +23,7 @@ public class NewtonRaphson {
     /** Default tolerance. */
     public static final double TOLERANCE = 0.000_000_1;
 
-    public static boolean IsSout = true;
+    public static boolean IsSout = false;
 
 
     /**
@@ -34,8 +34,21 @@ public class NewtonRaphson {
         return new Builder();
     }
 
+    /**
+     * function,f(x)
+     */
     private final DoubleUnaryOperator func;
+
+    /**
+     * derivative,f'(x)
+     */
     private final DoubleUnaryOperator derivative;
+
+    /**
+     * second derivative,f''(x)
+     */
+    private final DoubleUnaryOperator second_derivative;
+
     private final double tolerance;
     private final long iterations;
 
@@ -50,10 +63,12 @@ public class NewtonRaphson {
     public NewtonRaphson(
         DoubleUnaryOperator func,
         DoubleUnaryOperator derivative,
+        DoubleUnaryOperator second_derivative,
         double tolerance,
         long iterations) {
         this.func = func;
         this.derivative = derivative;
+        this.second_derivative = second_derivative;
         this.tolerance = tolerance;
         this.iterations = iterations;
     }
@@ -98,6 +113,12 @@ public class NewtonRaphson {
      *                                 given number of iterations
      */
     public double inverse(final double target, final double guess) {
+        /**
+         * x        candidate
+         * f(x)     value
+         * f'(x)    slope
+         * f''(x)   curvature
+         */
         double candidate = guess;
         for (long i = 0; i < iterations; i++) {
             double value = func.applyAsDouble(candidate) - target;
@@ -110,7 +131,14 @@ public class NewtonRaphson {
                     throw new ZeroValuedDerivativeException(
                         guess, i, candidate, value);
                 }
-                if(IsSout) System.out.println("[y:f(y):f'(y)]"+candidate+":"+value+":"+slope);
+                if(IsSout) {
+                    double curvature = second_derivative.applyAsDouble(candidate);
+                    System.out.println("[y:f(y):f'(y):f''(y)]\t"+candidate+"\t"+value+"\t"+slope+"\t"+curvature);
+                    //验证收敛，需满足 f'(x)*f'(x)-|f(x)*f''(x)/2|>0
+                    double convergence = slope * slope - Math.abs(value * curvature) * 0.5;
+                    System.out.println("收敛判定："+convergence);
+                    System.out.println("收敛判定："+curvature*value);
+                }
                 candidate -= value / slope;
             }
         }
@@ -124,8 +152,11 @@ public class NewtonRaphson {
 
         private DoubleUnaryOperator func;
         private DoubleUnaryOperator derivative;
+        private DoubleUnaryOperator second_derivative;
+
         private double tolerance = TOLERANCE;
-        private long iterations = 10_000_000_00;
+//        private long iterations = 10_000_000_00;
+        private long iterations = 1_000;
 
         public Builder() {
         }
@@ -140,6 +171,11 @@ public class NewtonRaphson {
             return this;
         }
 
+        public Builder withSecondDerivative(DoubleUnaryOperator second_derivative) {
+            this.second_derivative = second_derivative;
+            return this;
+        }
+
         public Builder withTolerance(double tolerance) {
             this.tolerance = tolerance;
             return this;
@@ -151,7 +187,7 @@ public class NewtonRaphson {
         }
 
         public NewtonRaphson build() {
-            return new NewtonRaphson(func, derivative, tolerance, iterations);
+            return new NewtonRaphson(func, derivative, second_derivative, tolerance, iterations);
         }
 
         /**

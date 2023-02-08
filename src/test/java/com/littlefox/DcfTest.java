@@ -1,5 +1,6 @@
 package com.littlefox;
 
+import com.littlefox.arith.NonconvergenceException;
 import com.littlefox.arith.ZeroValuedDerivativeException;
 import com.littlefox.dcf.DCFUtil;
 import com.littlefox.pojo.Transaction;
@@ -41,7 +42,7 @@ public class DcfTest {
 
 
     @Test
-    public void coupon57() {
+    public void coupon57() throws IOException {
 
         Transaction today = new Transaction(0.0, "2022-11-29");
         Transaction target = new Transaction(0.0, "2025-11-25");
@@ -55,9 +56,6 @@ public class DcfTest {
 
 //        Double xirr = XIRRUtil.xirr(list);
 //        System.out.println("xirr:" + xirr);
-        System.out.println("********************************");
-        System.out.println("********************************");
-        System.out.println("********************************");
 
 //        for (int i = -10; i < 10; i++) {
 //            double yld = 0.000_001 * i + xirr;
@@ -66,10 +64,105 @@ public class DcfTest {
 //            System.out.println("牛顿拉夫森算法反推prc2yld：\t" + DCFUtil.dcf_prc2yld(list, prc));
 //        }
 
-        double yld =-0.3;
+        double yld = -0.205000;
         double prc = DCFUtil.dcf_yld2prc(list, yld);
         System.out.println("yld2prc："+yld+"->"+prc);
-        System.out.println("牛顿拉夫森算法反推prc2yld："+DCFUtil.dcf_prc2yld(list,prc));
+        System.out.println("********************************");
+        System.out.println("********************************");
+        System.out.println("********************************");
+        double[] x0s = new double[]{-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9};
+        for(double x0:x0s){
+            try {
+                System.out.println("********************************");
+                System.out.printf("====>牛顿拉夫森算法反推prc2yld[%s]："+DCFUtil.dcf_prc2yld(list,prc,x0),x0);
+                System.out.println();
+                System.out.println("********************************");
+                break;
+            }catch (Exception e){
+                continue;
+            }
+        }
+
+
+//        System.out.println("牛顿拉夫森算法反推prc2yld："+DCFUtil.dcf_prc2yld(list,prc,-0.5));
+//        System.out.println("********************************");
+//        System.out.println("********************************");
+//        System.out.println("********************************");
+//        System.out.println("牛顿拉夫森算法反推prc2yld："+DCFUtil.dcf_prc2yld(list,prc,0.5));
+
+
+
+//        DecimalFormat df = new DecimalFormat("#0.000000");
+//        for (double i = -1+0.001; i < 1; i += 0.001) {
+//                double yld = i;
+//                double prc = DCFUtil.dcf_yld2prc(list, yld);
+//                System.out.println("yld2prc：\t\t\t\t" + yld + "->" + prc);
+//
+//            try {
+//                long start = System.currentTimeMillis();
+//                double candidate_yld = DCFUtil.dcf_prc2yld(list, prc);
+//                long end = System.currentTimeMillis();
+//                System.out.println("牛顿拉夫森算法反推prc2yld：\t" + DCFUtil.dcf_prc2yld(list, prc,-0.5));
+//                bufferedWriterMethod("./dcf.txt", df.format(yld) + "\t" + df.format(prc) + "\t" + df.format(candidate_yld) + "\t" + (end - start) + "\n");
+//            } catch (ZeroValuedDerivativeException e) {
+//                bufferedWriterMethod("./dcf.txt", df.format(yld) + "\t" + df.format(prc) + "\t" + "0" + "\t" + "0" + "\n");
+//                continue;
+//            } catch (NonconvergenceException e) {
+//                bufferedWriterMethod("./dcf.txt", df.format(yld) + "\t" + df.format(prc) + "\t" + "99999" + "\t" + "0" + "\n");
+//                continue;
+//            }
+//        }
+//        System.out.println("牛顿拉夫森算法反推prc2yld：\t" + DCFUtil.dcf_prc2yld(list, DCFUtil.dcf_yld2prc(list, 0.000_101)));
+
+    }
+
+    @Test
+    public void coupon57_x0_multiple() throws IOException {
+
+        Transaction today = new Transaction(0.0, "2022-11-29");
+        Transaction target = new Transaction(0.0, "2025-11-25");
+
+        List<Transaction> list = Arrays.asList(
+                new Transaction(-100, "2022-11-29"),
+                new Transaction(5.7, "2023-11-25"),
+                new Transaction(5.7, "2024-11-25"),
+                new Transaction(105.7, "2025-11-25")
+        );
+
+
+        DecimalFormat df = new DecimalFormat("#0.000000");
+        for (double i = -1+0.001; i < 1; i += 0.001) {
+                double yld = i;
+                double prc = DCFUtil.dcf_yld2prc(list, yld);
+                System.out.println("yld2prc：\t\t\t\t" + yld + "->" + prc);
+
+            double target_x0 = 0.0;
+            double candidate_yld = 0.0;
+            try {
+                double[] x0s = new double[]{-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1};
+                long start = System.currentTimeMillis();
+                for(double x0:x0s){
+                    try {
+                        candidate_yld = DCFUtil.dcf_prc2yld(list,prc,x0);
+                        System.out.printf("====>牛顿拉夫森算法反推prc2yld[%s]："+candidate_yld+"\n",x0);
+                        target_x0 = x0;
+                        break;
+                    }catch (Exception e){
+                        continue;
+                    }
+                }
+                long end = System.currentTimeMillis();
+                bufferedWriterMethod("./dcf-x0.txt", df.format(yld) + "\t" + df.format(prc) + "\t" + df.format(candidate_yld) + "\t" + target_x0 + "\n");
+            } catch (ZeroValuedDerivativeException e) {
+                bufferedWriterMethod("./dcf-x0.txt", df.format(yld) + "\t" + df.format(prc) + "\t" + "0" + "\t" + target_x0 + "\n");
+                continue;
+            } catch (NonconvergenceException e) {
+                bufferedWriterMethod("./dcf-x0.txt", df.format(yld) + "\t" + df.format(prc) + "\t" + "99999" + "\t" + target_x0 + "\n");
+                continue;
+            }
+        }
+        System.out.println("牛顿拉夫森算法反推prc2yld：\t" + DCFUtil.dcf_prc2yld(list, DCFUtil.dcf_yld2prc(list, 0.000_101)));
+
     }
 
 
@@ -107,17 +200,19 @@ public class DcfTest {
 
         double [] ylds ={0.039036,0.039037,0.039038,0.039039,0.039040,0.039041};
 
-        long s, e1, e2;
-        for (double yld : ylds) {
-            s = System.currentTimeMillis();
-            double prc = DCFUtil.dcf_yld2prc(list, yld);
-            e1 = System.currentTimeMillis();
-            double v = DCFUtil.dcf_prc2yld(list, prc);
-            e2 = System.currentTimeMillis();
-            System.out.println();
-            System.out.println("yld2prc：\t\t\t\t" + yld + "->" + (300 + prc) + "\t" + (e1 - s) + "ms");
-            System.out.println("牛顿拉夫森算法反推prc2yld：\t" + v + "\t" + (e2 - e1) + "ms");
-        }
+//        long s, e1, e2;
+//        for (double yld : ylds) {
+//            s = System.currentTimeMillis();
+//            double prc = DCFUtil.dcf_yld2prc(list, yld);
+//            e1 = System.currentTimeMillis();
+//            double v = DCFUtil.dcf_prc2yld(list, prc);
+//            e2 = System.currentTimeMillis();
+//            System.out.println();
+//            System.out.println("yld2prc：\t\t\t\t" + yld + "->" + (300 + prc) + "\t" + (e1 - s) + "ms");
+//            System.out.println("牛顿拉夫森算法反推prc2yld：\t" + v + "\t" + (e2 - e1) + "ms");
+//        }
+
+        double v = DCFUtil.dcf_prc2yld(list, 0);
 
 //        double yld1 = 0.039038;
 //        double prc1 = DCFUtil.dcf_yld2prc(list, yld1);
